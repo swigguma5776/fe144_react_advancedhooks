@@ -11,7 +11,7 @@ export const useMovieData = () => {
     useEffect(() => {
         
         const fetchData = async () => {
-            const movieId = Math.floor(Math.random() * (500 - 70) + 70);
+            const movieId = Math.floor(Math.random() * (10000 - 500) + 500);
             
             try {
                 const response = await axios.get(
@@ -23,7 +23,7 @@ export const useMovieData = () => {
                         }
                     }
                 );
-                console.log(response.data)
+               
                 setMovieData(response.data); // Use response.data
             } catch (error) {
                 console.error('Error fetching movie data:', error);
@@ -34,7 +34,7 @@ export const useMovieData = () => {
 
     }, []); // no dependencies so get's called once right away (once page mounts to DOM)
 
-    console.log(movieData)
+    
     return { movieData };
 };
 

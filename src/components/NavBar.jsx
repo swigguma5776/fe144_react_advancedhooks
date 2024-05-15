@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'; 
 import { Container, Navbar, Button, Nav, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { EmojiKissFill } from 'react-bootstrap-icons';
+import { EmojiKissFill, Smartwatch } from 'react-bootstrap-icons';
 import { useSelector } from 'react-redux';
 
 // internal imports
@@ -12,6 +12,7 @@ function NavBar() {
     const { user } = useContext(UserContext); 
     const navigate = useNavigate();
     const { totalItems } = useSelector( (state) => state.wishList )
+    const { watchList } = useSelector( state => state.watchList)
     console.log(totalItems)
   return (
     <Navbar expand="lg" className="bg-info d-flex flex-row align-items-center justify-content-between px-3">
@@ -20,6 +21,10 @@ function NavBar() {
               <Container onClick={()=> navigate('/wish-list')}>
                 <EmojiKissFill color='white'></EmojiKissFill>
                 <Badge bg="secondary">{totalItems}</Badge>
+              </Container>
+              <Container onClick={()=> navigate('/watch-list')}>
+                <Smartwatch color='white'></Smartwatch>
+                <Badge bg="secondary">{watchList.length}</Badge>
               </Container>
               <h6 className='mx-3 mt-2'>User: {user.name}</h6>
               <Button variant="outline-success" onClick={()=> navigate('/login')}>Login</Button>

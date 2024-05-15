@@ -5,6 +5,7 @@ import { Container } from 'react-bootstrap';
 import UserContext from '../context/UserContext';
 import NavBar from './NavBar';
 import MovieData from './MovieData';
+import Search from './Search'; 
 
 function Home() {
     // setup our useContext hook
@@ -22,6 +23,7 @@ function Home() {
                 <p>You are now {user.isLoggedIn ? 'logged in' : 'logged out'}</p>
                 <h3>Your Recommended Movie: </h3>
                 <MovieData />
+                <Search />
             </Container>
         }
         </Container>

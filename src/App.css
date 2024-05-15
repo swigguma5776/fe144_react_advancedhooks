@@ -3,4 +3,17 @@
     height: 500px;
     width: 1000px;
     overflow: hidden; 
+    background-color: rgb(26, 25, 25);
+    color: white;
+}
+
+.movie-list {
+    background-color: rgb(37, 37, 37);
+    color: white;
+    border: 1px solid red; 
+}
+
+.list-group-item {
+    background-color: rgb(37, 37, 37);
+    color: white;
 }
