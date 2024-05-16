@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback }from 'react';
 import { Card, ListGroup, Container } from 'react-bootstrap';
 import { EmojiKiss } from 'react-bootstrap-icons';
 import { useDispatch } from 'react-redux';
@@ -40,10 +40,12 @@ function MovieData({ searchData }) {
         dispatch(addItem( movie ))
         
     }
+        
     
-    const handleAddWatchList = ( movieData ) => {
-        const movie = handleDataConvert(movieData)
-        dispatch(postToWatchList(movie))
+    
+    const handleAddWatchList = (movieData) => {
+        const data = handleDataConvert(movieData);
+        dispatch(postToWatchList(data));
     }
     
    
@@ -74,4 +76,4 @@ function MovieData({ searchData }) {
     )
 }
 
-export default MovieData
+export default React.memo(MovieData);

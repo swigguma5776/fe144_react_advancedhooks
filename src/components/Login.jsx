@@ -14,6 +14,7 @@ function Login() {
     
     const handleSubmit = (event) => {
         event.preventDefault();
+        sessionStorage.setItem('user', JSON.stringify({name: username, isLoggedIn: true }))
         setUser({name: username, isLoggedIn: true })
         navigate('/')
     }
@@ -38,4 +39,4 @@ function Login() {
   )
 }
 
-export default Login
+export default React.memo(Login);

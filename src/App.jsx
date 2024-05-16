@@ -13,7 +13,10 @@ import { store } from './store';
 
 function App() {
   const queryClient = new QueryClient();
-  const [user, setUser] = useState({name: '', isLoggedIn: false})
+  const [user, setUser] = useState( () => {
+    let currentUser = sessionStorage.getItem('user');
+    console.log(currentUser)
+    return currentUser ? JSON.parse(currentUser) : {name: '', isLoggedIn: false} })
 
   return (
     <QueryClientProvider client={queryClient}>

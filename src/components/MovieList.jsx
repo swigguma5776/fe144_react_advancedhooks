@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, 
         Card, 
@@ -9,10 +9,12 @@ import { Container,
         FloatingLabel,
         Form } from 'react-bootstrap';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios'; 
 
 // internal imports
 import { deleteItem } from '../features/wishListSlice';
 import NavBar from './NavBar';
+import { postToWatchList } from '../features/watchListSlice';
 
 function MovieList({ listType }) {
     const [open, setOpen] = useState(false);
@@ -21,44 +23,60 @@ function MovieList({ listType }) {
     const [id, setId] = useState(null);
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
+    // use the useMemo whenever you have expensive functions that return values.
+    // will only run when the dependencies updates, not on every re-rende
     
     let { watchList } = useSelector(state => state.watchList)
     let { wishList } = useSelector(state => state.wishList) //this grabs the current state of our wishList
     
-    console.log(open)
     
     useEffect(()=> {
-        console.log('in the useEffect')
         if (listType === 'watch') {
             setMovies(watchList)
             }else {
                 setMovies(wishList)
             }
     },[])
+    
+    
+    
+    const avgPopularity = useMemo(() => {
+        let avgPopularity = 0
+        console.log(movies)
+        if (movies.length !== 0){
+            let popularityList = movies.map((movie) => movie.popularity )
+            avgPopularity = Math.round(popularityList.reduce((acc, curr) => acc + curr) / popularityList.length)
+        }
+        return avgPopularity
+    }, [movies])
         
    
     
-    const handleDelete = (id) => {
-        listType == 'wish' && dispatch(deleteItem( id ));
+    const handleDelete = useCallback((id) => {
+        listType == 'wish' && dispatch(deleteItem( id ))
+    },[dispatch, id]);
        
-    }
+    
     
     const postReview = async () => {
+        console.log({ review }, id)
+        // dispatch(postToWatchList({ review }, id))
         const response = await axios.put(
-            `http://127.0.0.1:5000/watchlist/${id}`,
-            review, // Pass data directly, no need for JSON.stringify
-            {
-                headers: {
-                    'Content-Type': 'application/json'
+                `http://127.0.0.1:5000/watchlist/${id}`,
+                { review }, // Pass data directly, no need for JSON.stringify
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 }
-            }
-        );
+            );
         
-        return response;
-        
+        const responseGet = await axios.get('http://127.0.0.1:5000/watchlist')
+        console.log(responseGet)
+        setMovies(responseGet.data)
     }
     
-    const {mutate, isLoading, isError, error} = useMutation({
+    const {mutate, isLoading, isError, error, isSuccess} = useMutation({
         mutationFn: postReview,
         onSuccess: (data) => {
             queryClient.invalidateQueries(['reviews'])
@@ -69,6 +87,7 @@ function MovieList({ listType }) {
     const handleSubmit = (event) => {
         event.preventDefault();
         mutate();
+        setOpen(false)
     }
     
 
@@ -87,7 +106,7 @@ function MovieList({ listType }) {
                                 </Card.Text>
                                 {movie.review || listType === 'watch' &&
                                     <div>
-                                        <Card.Text>{movie.review}</Card.Text>
+                                        <Card.Text>Review: {movie.review}</Card.Text>
                                         <Button onClick={()=> {setOpen(true); setId(movie.id)} }>Add Review</Button>
                                     </div>
                                 }
@@ -97,19 +116,19 @@ function MovieList({ listType }) {
                     </Col>
                 ))}
             </Row>
-            {open &&
             <Modal
-                size="sm"
+                size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
+                show={open}
             >
-                <Modal.Header closeButton>
+                <Modal.Header>
                 <Modal.Title id="contained-modal-title-vcenter">
                     Add a Review
                 </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form onSubmit={handleSubmit} className='w-100 p-4 border rounded mt-5'>
+                    <Form onSubmit={handleSubmit} className='w-100 p-4'>
                         <FloatingLabel controlId="Review" label="Review">
                             <Form.Control 
                                 type="text" 
@@ -117,13 +136,12 @@ function MovieList({ listType }) {
                                 onChange={ (event)=> setReview(event.target.value)} />
                         </FloatingLabel>
                         <Button variant='outline-info' type='submit' className='mt-4'>Submit</Button>
+                        <Button className='ms-3 mt-4'variant='danger' onClick={()=> setOpen(false)}>Cancel</Button>
                     </Form>
                 </Modal.Body>
-                <Button variant='danger' onClick={()=> setOpen(false)}>Cancel</Button>
             </Modal>
-            }
         </Container>
     )
 }
 
-export default MovieList;
+export default React.memo(MovieList);

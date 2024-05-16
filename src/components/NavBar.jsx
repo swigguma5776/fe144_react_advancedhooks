@@ -9,11 +9,25 @@ import UserContext from '../context/UserContext';
 
 
 function NavBar() {
-    const { user } = useContext(UserContext); 
+    const { user, setUser } = useContext(UserContext); 
     const navigate = useNavigate();
     const { totalItems } = useSelector( (state) => state.wishList )
     const { watchList } = useSelector( state => state.watchList)
-    console.log(totalItems)
+    
+    let loginInText = 'Login'
+    if (user.isLoggedIn === true){
+      loginInText = 'Logout'
+    }
+    
+    const loginInOrLogOut = () => {
+      if (user.isLoggedIn === true){
+        sessionStorage.setItem('user', JSON.stringify({user: '', isLoggedIn: false}))
+        setUser({user: '', isLoggedIn: false})
+      } else {
+        navigate('/login')
+      }
+    }
+   
   return (
     <Navbar expand="lg" className="bg-info d-flex flex-row align-items-center justify-content-between px-3">
         <Navbar.Brand  href="/">Movie App</Navbar.Brand>
@@ -24,13 +38,13 @@ function NavBar() {
               </Container>
               <Container onClick={()=> navigate('/watch-list')}>
                 <Smartwatch color='white'></Smartwatch>
-                <Badge bg="secondary">{watchList.length}</Badge>
+                <Badge bg="secondary">{watchList ? watchList.length : 0}</Badge>
               </Container>
               <h6 className='mx-3 mt-2'>User: {user.name}</h6>
-              <Button variant="outline-success" onClick={()=> navigate('/login')}>Login</Button>
+              <Button variant="outline-success" onClick={ loginInOrLogOut }>{ loginInText }</Button>
             </Nav>
     </Navbar>
   )
 }
 
-export default NavBar
+export default React.memo(NavBar);

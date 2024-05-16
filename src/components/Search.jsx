@@ -53,7 +53,7 @@ function Search() {
         enabled: false, // doesn't get called right aaway. we enable the API call
         refetchOnReconnect: true, // if the network reconnects for some reason we will make a new call
         // retry: 3, // how many times do we waant to retry the API call if it fails
-        retryDelay: 3000, 
+        // retryDelay: 3000, 
         staleTime: 3 * 60 * 1000, // 3 x 60 seconds x 1000 milliseconds. This is how long the most resent call remains "fresh"
         gcTime: 15 * 60 * 1000 // this is how long data stays in the cache memory if it hasn't been used yet
     })
@@ -103,4 +103,4 @@ function Search() {
   )
 }
 
-export default Search
+export default React.memo(Search);
